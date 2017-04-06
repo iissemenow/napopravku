@@ -24,22 +24,14 @@ class SiteController extends Controller
                 'only' => ['logout', 'login', 'register', 'index', 'wait', 'confirm'],
                 'rules' => [
                     [
-                        'actions' => ['login', 'register'],
+                        'actions' => ['login', 'register', 'index'],
                         'allow' => true,
                         'roles' => ['?'],
                     ],
                     [
-                        'actions' => ['wait', 'logout', 'confirm'],
+                        'actions' => ['index', 'wait', 'logout', 'confirm'],
                         'allow' => true,
                         'roles' => ['@'],
-                    ],
-                    [
-                        'actions' => ['index'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                        'matchCallback' => function ($rule, $action) {
-                            return User::isUserActive(Yii::$app->user->identity->name);
-                        }
                     ],
                 ],
             ],

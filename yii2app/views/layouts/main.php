@@ -37,7 +37,7 @@ AppAsset::register($this);
 
     $menuItems = [
         ['label' => 'Главная', 'url' => ['/site/index']],
-        ['label' => 'Запись на прием', 'url' => ['/admin/edit']]
+        ['label' => 'Запись на прием', 'url' => ['/admin/reception']]
     ];
      
     if (Yii::$app->user->isGuest) {
