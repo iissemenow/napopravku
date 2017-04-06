@@ -8,6 +8,8 @@ use yii\web\Controller;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use app\models\RegisterForm;
+use app\models\User;
 
 class SiteController extends Controller
 {
@@ -19,12 +21,25 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout'],
+                'only' => ['logout', 'login', 'register', 'index', 'wait', 'confirm'],
                 'rules' => [
                     [
-                        'actions' => ['logout'],
+                        'actions' => ['login', 'register'],
+                        'allow' => true,
+                        'roles' => ['?'],
+                    ],
+                    [
+                        'actions' => ['wait', 'logout', 'confirm'],
                         'allow' => true,
                         'roles' => ['@'],
+                    ],
+                    [
+                        'actions' => ['index'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                        'matchCallback' => function ($rule, $action) {
+                            return User::isUserActive(Yii::$app->user->identity->name);
+                        }
                     ],
                 ],
             ],
@@ -54,6 +69,28 @@ class SiteController extends Controller
     }
 
     /**
+     * Register action.
+     *
+     * @return string
+     */
+    public function actionRegister()
+    {
+        $model = new RegisterForm();
+ 
+        if ($model->load(Yii::$app->request->post())) {
+            if ($user = $model->signup()) {
+                if (Yii::$app->getUser()->login($user)) {
+                    return $this->redirect('index');
+                }
+            }
+        }
+ 
+        return $this->render('register', [
+            'model' => $model,
+        ]);
+    }
+
+    /**
      * Displays homepage.
      *
      * @return string
@@ -76,7 +113,7 @@ class SiteController extends Controller
 
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
+            return $this->goHome();
         }
         return $this->render('login', [
             'model' => $model,
