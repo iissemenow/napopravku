@@ -5,7 +5,7 @@ namespace app\controllers;
 use Yii;
 use app\models\User;
 use app\models\UserSearch;
-use app\models\WorkingSheetSearch;
+use app\models\ReceptionsSearch;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -51,8 +51,9 @@ class AdminController extends Controller
     {
 
         $params = Yii::$app->request->post();
+        //$params = Yii::$app->request->queryParams;
         if (!isset($params['date'])) $params['date'] = date('Y-m-d');
-        $searchModel = new WorkingSheetSearch();
+        $searchModel = new ReceptionsSearch();
         $dataProvider = $searchModel->search($params);
 
         return $this->render('reception', [

@@ -5,11 +5,12 @@ namespace app\models;
 use Yii;
 use app\models\WorkingSheet;
 use app\models\Receptions;
+use app\models\Doctor;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use yii\db\QueryInterface;
  
-class WorkingSheetSearch extends WorkingSheet
+class ReceptionsSearch extends Receptions
 {
     /**
      * @inheritdoc
@@ -17,6 +18,7 @@ class WorkingSheetSearch extends WorkingSheet
 
     /* Вычисляемые аттрибуты */
     public $date;
+    public $doctorName;
     //public $roleName;
 
     /**
@@ -25,11 +27,10 @@ class WorkingSheetSearch extends WorkingSheet
     public function rules()
     {
         return [
-            [['date'/*, 'phone', 'email', 'status', 'roleName'*/], 'safe'],
+            [['date', 'doctorName'/*, 'phone', 'email', 'status', 'roleName'*/], 'safe'],
         ];
     }
 
- 
     /**
      * @inheritdoc
      */
@@ -37,6 +38,7 @@ class WorkingSheetSearch extends WorkingSheet
     {
         //$query = WorkingSheet::find();
         //print_r(WorkingSheet::find()->andWhere('date = "'.$params['date'].'"')->count());
+        
         if (Receptions::find()
             ->andWhere('date = "'.$params['date'].'"')
             ->count() == 0) {
@@ -44,7 +46,8 @@ class WorkingSheetSearch extends WorkingSheet
         }
         $query = Receptions::find()
             ->andWhere('date = "'.$params['date'].'"')
-            ->andWhere('"'.$params['date'].'" >= CURDATE()');
+            ->andWhere('"'.$params['date'].'" >= CURDATE()')
+            ->joinWith('doctor');
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
@@ -55,6 +58,8 @@ class WorkingSheetSearch extends WorkingSheet
         if (!$this->load($params, '')) {
             return $dataProvider;
         }*/
+
+        $query->andWhere('tbl_doctor.name LIKE "%'.$params['ReceptionsSearch']['doctorName'].'%"');
         //$query = $query->join('CROSS JOIN', 'tbl_receptions', 'tbl_receptions.date = "'.$this->date.'"');
      
         /*$query->joinWith('role');
