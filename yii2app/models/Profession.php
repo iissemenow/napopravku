@@ -5,22 +5,19 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "tbl_doctor".
+ * This is the model class for table "tbl_profession".
  *
  * @property integer $id
  * @property string $name
- * @property integer $profession_id
  */
-class Doctor extends \yii\db\ActiveRecord
+class Profession extends \yii\db\ActiveRecord
 {
-
-    //public $name;
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'tbl_doctor';
+        return 'tbl_profession';
     }
 
     /**
@@ -29,8 +26,7 @@ class Doctor extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'profession_id'], 'required'],
-            [['profession_id'], 'integer'],
+            [['name'], 'required'],
             [['name'], 'string', 'max' => 100],
         ];
     }
@@ -42,8 +38,16 @@ class Doctor extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Врач',
-            'profession_id' => 'Специализация',
+            'name' => 'Name',
         ];
+    }
+
+    public static function allProfessions() {
+        $allProf = static::find()->all();
+        $arrProf = array();
+        foreach ($allProf as $oneProf) {
+            $arrProf[$oneProf['id']] = $oneProf['name'];
+        }
+        return $arrProf;
     }
 }

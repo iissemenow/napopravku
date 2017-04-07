@@ -6,6 +6,7 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
 use kartik\date\DatePicker;
+use app\models\Profession;
 
 $this->title = 'Запись на прием';
 $this->params['breadcrumbs'][] = $this->title;
@@ -28,7 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
 	    				'language' => 'ru',
 	    				'type' => DatePicker::TYPE_BUTTON,
 	    				'name' => 'date',
-	    				'value' => date('Y-m-d'),
+	    				'value' => ((isset($_REQUEST['date']))?($_REQUEST['date']):(date('Y-m-d'))),//date('Y-m-d'),
 						'pluginOptions' => [
 							'format' => 'yyyy-mm-dd',
 							'todayHighlight' => true,
@@ -36,17 +37,32 @@ $this->params['breadcrumbs'][] = $this->title;
 						]
 	    			]),
 	    		],
-	    		'time',
+	    		[
+	    			'attribute' => 'time',
+	    			'filterInputOptions' => [
+	    				'value' => ((isset($_REQUEST['ReceptionsSearch']['time']))
+	    					? ($_REQUEST['ReceptionsSearch']['time'])
+	    					: ('')),
+	    			],
+	    		],
 	    		[
 	    			'attribute' => 'doctorName',
-	    			'format' => 'raw',
-	    			//'format'=>'text',
-	    			//'class' => DataColumn::className(),
-	    			/*'filter' => function($data) {
-	    				return '777';
-	    			}*/
-	    			//'filter' => '123',
+	    			'filterInputOptions' => [
+	    				'value' => ((isset($_REQUEST['ReceptionsSearch']['doctorName']))
+	    					? ($_REQUEST['ReceptionsSearch']['doctorName'])
+	    					: ('')),
+	    			],
 	    		],
+	    		[
+	    			'attribute' => 'profession_id',
+	    			'format' => 'raw',
+	    			'filter' => Profession::allProfessions(),
+	    			'value' => function ($model, $key, $index, $column) {
+	    				return Profession::findOne($model['doctor']['profession_id'])['name'];
+	    			},
+	    			'header' => 'Специализация',
+	    		],
+	    		//'tbl_profession.name',
 	    	]
 		]); ?>
 	<?php Pjax::end() ?>

@@ -18,8 +18,9 @@ class ReceptionsSearch extends Receptions
 
     /* Вычисляемые аттрибуты */
     public $date;
+    public $time;
     public $doctorName;
-    //public $roleName;
+    public $profession_id;
 
     /**
      * @inheritdoc
@@ -27,7 +28,7 @@ class ReceptionsSearch extends Receptions
     public function rules()
     {
         return [
-            [['date', 'doctorName'/*, 'phone', 'email', 'status', 'roleName'*/], 'safe'],
+            [['date', 'doctorName', 'time', 'profession_id'/*, 'phone', 'email', 'status', 'roleName'*/], 'safe'],
         ];
     }
 
@@ -38,8 +39,11 @@ class ReceptionsSearch extends Receptions
     {
         //$query = WorkingSheet::find();
         //print_r(WorkingSheet::find()->andWhere('date = "'.$params['date'].'"')->count());
+        //print_r(date('w', strtotime($params['date']))); exit();
+        $dn = date('w', strtotime($params['date']));
         
-        if (Receptions::find()
+        if ($dn != 6 && $dn != 0 &&
+            Receptions::find()
             ->andWhere('date = "'.$params['date'].'"')
             ->count() == 0) {
             Receptions::addDay($params['date']);
@@ -50,6 +54,9 @@ class ReceptionsSearch extends Receptions
             ->joinWith('doctor');
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => [
+                'pageSize' => 0,
+            ],
         ]);
         /*if (!($this->load($params) && $this->validate())) {
             //$query->joinWith(['role']);
@@ -60,6 +67,9 @@ class ReceptionsSearch extends Receptions
         }*/
 
         $query->andWhere('tbl_doctor.name LIKE "%'.$params['ReceptionsSearch']['doctorName'].'%"');
+        if ($params['ReceptionsSearch']['profession_id'] !== '')
+            $query->andWhere('tbl_doctor.profession_id = "'.$params['ReceptionsSearch']['profession_id'].'"');
+        $query->andWhere('time LIKE "%'.$params['ReceptionsSearch']['time'].'%"');
         //$query = $query->join('CROSS JOIN', 'tbl_receptions', 'tbl_receptions.date = "'.$this->date.'"');
      
         /*$query->joinWith('role');
