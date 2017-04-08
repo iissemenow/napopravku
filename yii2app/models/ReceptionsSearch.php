@@ -28,7 +28,7 @@ class ReceptionsSearch extends Receptions
     public function rules()
     {
         return [
-            [['date', 'doctorName', 'time', 'profession_id'/*, 'phone', 'email', 'status', 'roleName'*/], 'safe'],
+            [['date', 'doctorName', 'time', 'profession_id'], 'safe'],
         ];
     }
 
@@ -37,12 +37,13 @@ class ReceptionsSearch extends Receptions
      */
     public function search($params)
     {
-        //$query = WorkingSheet::find();
-        //print_r(WorkingSheet::find()->andWhere('date = "'.$params['date'].'"')->count());
-        //print_r(date('w', strtotime($params['date']))); exit();
         $dn = date('w', strtotime($params['date']));
+        $noOldDate = ((strtotime('now') - strtotime($params['date'])) <= 86400);
+        $nowMonth = date('m');
+        $dateMonth = date('m', strtotime($params['date']));
+        $okMonth = ($dateMonth + (($dateMonth < $nowMonth)?(12):(0)) - $nowMonth < 2);
         
-        if ($dn != 6 && $dn != 0 &&
+        if ($dn != 6 && $dn != 0 && $noOldDate && $okMonth &&
             Receptions::find()
             ->andWhere('date = "'.$params['date'].'"')
             ->count() == 0) {
@@ -51,6 +52,7 @@ class ReceptionsSearch extends Receptions
         $query = Receptions::find()
             ->andWhere('date = "'.$params['date'].'"')
             ->andWhere('"'.$params['date'].'" >= CURDATE()')
+            ->andWhere('(user_id = 0 OR user_id = '.Yii::$app->user->identity->id.')')
             ->joinWith('doctor');
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -58,29 +60,11 @@ class ReceptionsSearch extends Receptions
                 'pageSize' => 0,
             ],
         ]);
-        /*if (!($this->load($params) && $this->validate())) {
-            //$query->joinWith(['role']);
-            return $dataProvider;
-        }
-        if (!$this->load($params, '')) {
-            return $dataProvider;
-        }*/
 
         $query->andWhere('tbl_doctor.name LIKE "%'.$params['ReceptionsSearch']['doctorName'].'%"');
-        if ($params['ReceptionsSearch']['profession_id'] !== '')
-            $query->andWhere('tbl_doctor.profession_id = "'.$params['ReceptionsSearch']['profession_id'].'"');
+        if ($params['profession_id'] != 0)
+            $query->andWhere('tbl_doctor.profession_id = "'.$params['profession_id'].'"');
         $query->andWhere('time LIKE "%'.$params['ReceptionsSearch']['time'].'%"');
-        //$query = $query->join('CROSS JOIN', 'tbl_receptions', 'tbl_receptions.date = "'.$this->date.'"');
-     
-        /*$query->joinWith('role');
-        $query->andWhere('name LIKE "%'.$this->name.'%"');
-        $query->andWhere('phone LIKE "%'.$this->phone.'%"');
-        $query->andWhere('email LIKE "%'.$this->email.'%"');
-        print_r($this->roleName);
-        $query->andWhere('tbl_role.title LIKE "%'.$this->roleName.'%"');
-        if ($this->status !== '') $query->andWhere('status = "'.$this->status.'"');*/
-        //$query->andWhere('tbl_working_sheet.date = "'.$this->date.'"');
-        //$query->andWhere('"'.$params['date'].'" >= CURDATE()');
         return $dataProvider;
     }
  

@@ -6,6 +6,7 @@ use Yii;
 use app\models\User;
 use app\models\UserSearch;
 use app\models\ReceptionsSearch;
+use app\models\Receptions;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -67,12 +68,12 @@ class AdminController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionAccess($id)
+    public function actionWrite($id)
     {
-        $model = User::findOne($id);
-        $model->role_id = User::ROLE_ADMIN;
-        if ($model->save()) return $this->redirect('edit');
-        else throw new HttpException(404);
+        $model = Receptions::findOne($id);
+        $model->user_id = Yii::$app->user->identity->id;
+        $model->save();
+        return true;
 
     }
 

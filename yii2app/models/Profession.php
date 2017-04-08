@@ -44,7 +44,7 @@ class Profession extends \yii\db\ActiveRecord
 
     public static function allProfessions() {
         $allProf = static::find()->all();
-        $arrProf = array();
+        $arrProf = array(0 => '');
         foreach ($allProf as $oneProf) {
             $arrProf[$oneProf['id']] = $oneProf['name'];
         }
