@@ -7,7 +7,6 @@ use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
-use app\models\ContactForm;
 use app\models\RegisterForm;
 use app\models\User;
 
@@ -21,7 +20,7 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'login', 'register', 'index', 'wait', 'confirm'],
+                'only' => ['logout', 'login', 'register', 'index'],
                 'rules' => [
                     [
                         'actions' => ['login', 'register', 'index'],
@@ -29,7 +28,7 @@ class SiteController extends Controller
                         'roles' => ['?'],
                     ],
                     [
-                        'actions' => ['index', 'wait', 'logout', 'confirm'],
+                        'actions' => ['index', 'logout'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -124,31 +123,4 @@ class SiteController extends Controller
         return $this->goHome();
     }
 
-    /**
-     * Displays contact page.
-     *
-     * @return string
-     */
-    public function actionContact()
-    {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
-            Yii::$app->session->setFlash('contactFormSubmitted');
-
-            return $this->refresh();
-        }
-        return $this->render('contact', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Displays about page.
-     *
-     * @return string
-     */
-    public function actionAbout()
-    {
-        return $this->render('about');
-    }
 }

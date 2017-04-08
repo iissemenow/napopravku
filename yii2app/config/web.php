@@ -48,7 +48,8 @@ $config = [
         ],
     ],
     'params' => $params,
-    'timeZone' => 'Europe/Moscow',
+    //'timeZone' => 'Europe/Moscow',
+    'timeZone' => 'Etc/GMT-4',
     'language' => 'ru',
     'sourceLanguage' => 'ru-Ru'
 ];
