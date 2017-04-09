@@ -10,7 +10,12 @@
 				<h1>Установка приложения</h1>
 				<button id="install" style="cursor: pointer;">Начать</button>
 				<p>
-					<progress id="progress" value="<?php echo ((isset($_REQUEST[ 'install' ]))?(0.6):(0)); ?>"></progress>
+					<progress id="progress" value="<?= 
+						(
+							(isset($_REQUEST[ 'install' ]))
+							? (0.6)
+							: (0)
+						); ?>"></progress>
 				</p>
 				<div id="res" style="font-weight: bold;"><?php if (isset($_REQUEST[ 'install' ])) echo "
 				Инициализация..."; ?></div>
@@ -90,30 +95,29 @@ return [
 		$commands = @file_get_contents(dirname(__FILE__).'/napopravku-master/napopravku.sql');
 		rename(dirname(__FILE__).'/napopravku-master/.htaccess', dirname(__FILE__).'/.htaccess');
 
-function dirDel ($dir) 
-{  
-    $d=opendir($dir);  
-    while(($entry=readdir($d))!==false) 
-    { 
-        if ($entry != "." && $entry != "..") 
-        { 
-            if (is_dir($dir."/".$entry)) 
-            {  
-                dirDel($dir."/".$entry);  
-            } 
-            else 
-            {  
-                unlink ($dir."/".$entry);  
-            } 
-        } 
-    } 
-    closedir($d);  
-    rmdir ($dir);  
-} 
+		function dirDel ($dir) 
+		{  
+		    $d=opendir($dir);  
+		    while(($entry=readdir($d))!==false) 
+		    { 
+		        if ($entry != "." && $entry != "..") 
+		        { 
+		            if (is_dir($dir."/".$entry)) 
+		            {  
+		                dirDel($dir."/".$entry);  
+		            } 
+		            else 
+		            {  
+		                unlink ($dir."/".$entry);  
+		            } 
+		        } 
+		    } 
+		    closedir($d);  
+		    rmdir ($dir);  
+		} 
 
-dirDel ('./napopravku-master');
+		dirDel ('./napopravku-master');
 
-		//@unlink('./napopravku-master');
 		$db = new PDO("mysql:host=".$_REQUEST['host'].";dbname=".$_REQUEST['dbname'].";charset=utf8",
 			$_REQUEST['username'],
 			$_REQUEST['password']);
